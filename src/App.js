@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import { Button, FlatList, Modal, Text, TextInput, Touchable, View } from 'react-native';
-import { styles } from "./styles"
+import { Text, View } from 'react-native';
+import { styles } from './styles'
+import { InputTask, ModalTask, TaskItem, TaskList } from './components';
 
 export default function App() {
 
@@ -23,9 +24,10 @@ export default function App() {
     setList(list.filter((x) => x.id != id))
   }
 
+  const onHandleChange = (task) => setInputTask(task)
 
   const renderItem = ({ item }) => (
-    <Text style={styles.text} onPress={() => onHandleRemoveTask(item.id)}>{item.value.toUpperCase()}</Text>
+    <TaskItem item={item} onHandleRemoveTask={onHandleRemoveTask} />
   )
 
   // const changeBackgroundColor = () => {
@@ -35,42 +37,13 @@ export default function App() {
 
   return (
     <View style={styles.container}>
-      <View style={styles.inputContainer}>
-
-        <TextInput
-          style={styles.input}
-          value={inputTask}
-          placeholder="Enter your task"
-          onChangeText={task => setInputTask(task)}
-        />
-
-        <Button
-          title='ADD'
-          color={"#3E2F5B"}
-          onPress={onHandleAddTask}
-          disabled={!inputTask}
-          style={styles.button}
-        />
-      </View>
-
+      <InputTask inputTask={inputTask} onHandleAddTask={onHandleAddTask} onHandleChange={onHandleChange} />
       <View style={styles.itemsContainer}>
         <View>
           <Text style={styles.itemsTitle}>{`things to do`.toUpperCase()} {`(${list.length}/10)`}</Text>
         </View>
-
-        <FlatList
-          style={styles.flatlist}
-          data={list}
-          renderItem={renderItem}
-          keyExtractor={item => item.id.toString()}
-        />
-
-        <Modal visible={modalVisible} animationType="fade">
-          <View style={styles.modalContainer}>
-            <Text>Borrar Item</Text>
-          </View>
-        </Modal>
-
+        <TaskList list={list} renderItem={renderItem} />
+        <ModalTask modalVisible={modalVisible} />
       </View>
     </View>
   );
